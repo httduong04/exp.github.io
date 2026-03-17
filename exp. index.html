@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>hồ phá thơ</title>
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200;0,300;0,400;0,500;0,600;1,200;1,300;1,400&family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --cream: #f5f0e8;
+    --ink: #1a1a1a;
+    --ink-light: #4a4a4a;
+    --ink-wash: rgba(26, 26, 26, 0.06);
+    --gold: #9c8b6e;
+    --font-title: 'Noto Serif', Georgia, serif;
+    --font-poem: 'Crimson Pro', Georgia, serif;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  html {
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: var(--font-poem);
+    background: var(--cream);
+    color: var(--ink);
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* ═══════════════════════════════════════
+     HOMEPAGE — INK ON WATER
+     ═══════════════════════════════════════ */
+  #homepage {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  #homepage.hidden {
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+  }
+
+  /* Subtle ink wash texture */
+  #homepage::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse at 30% 70%, var(--ink-wash) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 30%, var(--ink-wash) 0%, transparent 40%);
+    opacity: 0;
+    animation: inkSettle 3s 0.5s ease-out forwards;
+  }
+  
+  @keyframes inkSettle {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .home-title {
+    font-family: var(--font-title);
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    text-align: center;
+    user-select: none;
+    position: relative;
+  }
+  
+  .home-title span {
+    display: inline-block;
+    opacity: 0;
+    animation: letterReveal 1s ease forwards;
+  }
+  
+  .home-title span:nth-child(1) { animation-delay: 0.2s; }
+  .home-title span:nth-child(2) { animation-delay: 0.35s; }
+  .home-title span:nth-child(3) { animation-delay: 0.5s; }
+  
+  @keyframes letterReveal {
+    from { 
+      opacity: 0; 
+      transform: translateY(20px);
+      filter: blur(4px);
+    }
+    to { 
+      opacity: 1; 
+      transform: translateY(0);
+      filter: blur(0);
+    }
+  }
+
+  .home-click {
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .home-click::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--ink);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .home-click:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* Breathing dot */
+  .home-breath {
+    position: absolute;
+    bottom: 15vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background: var(--gold);
+    border-radius: 50%;
+    opacity: 0;
+    animation: breathe 4s 2s ease-in-out infinite;
+  }
+  
+  @keyframes breathe {
+    0%, 100% { opacity: 0.2; transform: translateX(-50%) scale(1); }
+    50% { opacity: 0.6; transform: translateX(-50%) scale(1.5); }
+  }
+
+  /* ═══════════════════════════════════════
+     POEM LIST — LIKE A TABLE OF CONTENTS
+     ═══════════════════════════════════════ */
+  #poem-list-view {
+    min-height: 100vh;
+    display: none;
+    flex-direction: column;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  
+  #poem-list-view.visible {
+    display: flex;
+    opacity: 1;
+  }
+
+  .list-header {
+    padding: 50px 50px 0;
+  }
+
+  .list-back {
+    font-family: var(--font-title);
+    font-size: 0.9rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    color: var(--ink-light);
+    transition: color 0.4s ease, letter-spacing 0.4s ease;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+  
+  .list-back:hover { 
+    color: var(--ink); 
+    letter-spacing: 0.15em;
+  }
+
+  .list-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 50px;
+    max-width: 700px;
+  }
+
+  .list-ornament {
+    font-size: 0.7rem;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    margin-bottom: 60px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s ease forwards;
+  }
+  
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .poem-list { list-style: none; }
+
+  .poem-item {
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards;
+  }
+  
+  .poem-item:nth-child(1) { animation-delay: 0.3s; }
+  .poem-item:nth-child(2) { animation-delay: 0.4s; }
+  .poem-item:nth-child(3) { animation-delay: 0.5s; }
+  .poem-item:nth-child(4) { animation-delay: 0.6s; }
+  .poem-item:nth-child(5) { animation-delay: 0.7s; }
+
+  .poem-link {
+    display: block;
+    padding: 28px 0;
+    text-decoration: none;
+    color: inherit;
+    border-bottom: 1px solid rgba(156, 139, 110, 0.2);
+    position: relative;
+    transition: padding-left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .poem-link:hover {
+    padding-left: 20px;
+  }
+  
+  .poem-link::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 0;
+    height: 1px;
+    background: var(--gold);
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .poem-link:hover::before {
+    width: 10px;
+  }
+
+  .poem-name {
+    font-family: var(--font-title);
+    font-size: clamp(1.3rem, 2.5vw, 1.7rem);
+    font-weight: 300;
+    letter-spacing: 0.05em;
+  }
+
+  /* ═══════════════════════════════════════
+     POEM PAGE — THE IMMERSIVE EXPERIENCE
+     ═══════════════════════════════════════ */
+  .poem-page {
+    display: none;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .poem-page.active {
+    display: block;
+  }
+
+  /* Painting background with vignette reveal */
+  .poem-bg-wrap {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    overflow: hidden;
+  }
+  
+  .poem-bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 0%;
+    opacity: 0;
+    transform: scale(1.05);
+    animation: paintingReveal 2s 0.3s ease-out forwards;
+  }
+  
+  @keyframes paintingReveal {
+    to { 
+      opacity: 1; 
+      transform: scale(1);
+    }
+  }
+  
+  /* Soft vignette */
+  .poem-bg-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(245, 240, 232, 0.3) 100%);
+    pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    .poem-bg-wrap {
+      position: absolute;
+      height: 100%;
+    }
+    .poem-bg-img {
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  /* Back button */
+  .poem-back {
+    position: fixed;
+    top: 32px;
+    left: 32px;
+    z-index: 200;
+    font-family: var(--font-title);
+    font-size: 0.85rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    text-decoration: none;
+    background: none;
+    border: none;
+    padding: 8px 12px;
+    opacity: 0;
+    animation: fadeIn 1s 1.5s ease forwards;
+    transition: opacity 0.3s ease, letter-spacing 0.3s ease;
+    backdrop-filter: blur(4px);
+    background: rgba(245, 240, 232, 0.3);
+    border-radius: 2px;
+  }
+  
+  @keyframes fadeIn {
+    to { opacity: 0.7; }
+  }
+  
+  .poem-back:hover { 
+    opacity: 1; 
+    letter-spacing: 0.15em;
+  }
+
+  /* Hero section */
+  .poem-hero {
+    position: relative;
+    z-index: 1;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+  }
+
+  .poem-hero-title {
+    font-family: var(--font-title);
+    font-weight: 300;
+    font-size: clamp(1.6rem, 4vw, 2.8rem);
+    letter-spacing: 0.12em;
+    line-height: 1.5;
+    opacity: 0;
+    animation: titleIn 1.5s 0.8s ease forwards;
+    text-shadow:
+      0 0 30px rgba(245, 240, 232, 0.8),
+      0 0 60px rgba(245, 240, 232, 0.5);
+  }
+  
+  @keyframes titleIn {
+    from { 
+      opacity: 0; 
+      transform: translateY(30px);
+      letter-spacing: 0.2em;
+    }
+    to { 
+      opacity: 1; 
+      transform: translateY(0);
+      letter-spacing: 0.12em;
+    }
+  }
+
+  .poem-hero-date {
+    font-family: var(--font-poem);
+    font-size: 0.75rem;
+    font-weight: 300;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-top: 30px;
+    opacity: 0;
+    animation: fadeIn 1s 1.5s ease forwards;
+    text-shadow: 0 0 20px rgba(245, 240, 232, 0.8);
+  }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeIn 1s 2.5s ease forwards;
+  }
+  
+  .hero-scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, currentColor, transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50% { opacity: 0.7; transform: scaleY(1.2); }
+  }
+
+  /* Poem body */
+  .poem-body {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 100px 50px 140px;
+  }
+
+  .poem-text {
+    font-family: var(--font-poem);
+    font-size: clamp(1.35rem, 2.5vw, 1.6rem);
+    font-weight: 400;
+    line-height: 2.4;
+    white-space: pre-line;
+  }
+
+  .stanza {
+    margin-bottom: 3.5em;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 1s ease, transform 1s ease;
+  }
+  
+  .stanza.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Individual line styling */
+  .poem-line {
+    display: block;
+    text-shadow:
+      0 0 8px rgba(245, 240, 232, 0.9),
+      0 0 20px rgba(245, 240, 232, 0.7),
+      0 0 40px rgba(245, 240, 232, 0.4);
+  }
+  
+  .poem-line.align-right {
+    text-align: right;
+  }
+  
+  .poem-line.align-center {
+    text-align: center;
+  }
+  
+  .poem-line.indent {
+    padding-left: 2em;
+  }
+
+  /* Poem ending */
+  .poem-fin {
+    text-align: center;
+    padding: 80px 40px 150px;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    animation: none;
+  }
+  
+  .poem-fin.visible {
+    animation: finReveal 1.5s ease forwards;
+  }
+  
+  @keyframes finReveal {
+    from { opacity: 0; }
+    to { opacity: 0.4; }
+  }
+  
+  .poem-fin-mark {
+    font-size: 1.8rem;
+    letter-spacing: 0.5em;
+  }
+
+  /* ═══════════════════════════════════════
+     TRANSITIONS
+     ═══════════════════════════════════════ */
+  .page-transition {
+    position: fixed;
+    inset: 0;
+    background: var(--cream);
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+  }
+  
+  .page-transition.active {
+    animation: pageFade 0.8s ease;
+  }
+  
+  @keyframes pageFade {
+    0% { opacity: 0; }
+    40% { opacity: 1; }
+    60% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* ═══════════════════════════════════════
+     RESPONSIVE
+     ═══════════════════════════════════════ */
+  @media (max-width: 640px) {
+    .list-header { padding: 30px 28px 0; }
+    .list-content { padding: 50px 28px; }
+    .poem-body { padding: 60px 28px 100px; }
+    .poem-back { top: 20px; left: 20px; padding: 6px 10px; }
+    .poem-hero { padding: 30px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-transition" id="transition"></div>
+
+<!-- ═══════════════════════════════════════
+     HOMEPAGE
+     ═══════════════════════════════════════ -->
+<div id="homepage">
+  <h1 class="home-title">
+    <span>hồ</span><span>&nbsp;phá&nbsp;</span><span class="home-click" onclick="showList()">thơ</span>
+  </h1>
+  <div class="home-breath"></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     POEM LIST
+     ═══════════════════════════════════════ -->
+<div id="poem-list-view">
+  <header class="list-header">
+    <button class="list-back" onclick="backToHome()">← trở về</button>
+  </header>
+
+  <main class="list-content">
+    <div class="list-ornament">✦ ✦ ✦</div>
+    
+    <ul class="poem-list">
+      <li class="poem-item">
+        <a class="poem-link" href="javascript:void(0)" onclick="openPoem('poem-1')">
+          <span class="poem-name">sông trăng tiêu điều</span>
+        </a>
+      </li>
+      
+      <!-- Add more poems here -->
+      <!--
+      <li class="poem-item">
+        <a class="poem-link" href="javascript:void(0)" onclick="openPoem('poem-2')">
+          <span class="poem-name">tên bài thơ</span>
+        </a>
+      </li>
+      -->
+    </ul>
+  </main>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     POEM 1: sông trăng tiêu điều
+     ═══════════════════════════════════════ -->
+<div id="poem-1" class="poem-page" data-fg="#2c2418" data-title-color="#1a1408">
+  
+  <button class="poem-back" onclick="backToList()">← danh sách</button>
+  
+  <div class="poem-bg-wrap">
+    <img class="poem-bg-img" src="vi-painting-1.JPG" alt="">
+  </div>
+
+  <div class="poem-hero">
+    <h2 class="poem-hero-title">sông trăng tiêu điều</h2>
+    <span class="poem-hero-date">Tháng 9, 2025</span>
+    <div class="hero-scroll">
+      <div class="hero-scroll-line"></div>
+    </div>
+  </div>
+
+  <div class="poem-body">
+    <div class="poem-text">
+      <div class="stanza">
+        <span class="poem-line">sông trăng tiêu điều</span>
+        <span class="poem-line">đò ơi, đèn cày của tôi đã cháy gần hết</span>
+        <span class="poem-line">ánh sáng thật đẹp đẽ</span>
+        <span class="poem-line">gió nâng niu ngọn lửa bé nhỏ, đừng sợ</span>
+        <span class="poem-line">thật ấm áp, đừng sợ</span>
+      </div>
+      
+      <div class="stanza">
+        <span class="poem-line">đã bao giờ tôi rời khỏi ánh sáng đủ lâu để biết bóng tối là gì?</span>
+        <span class="poem-line">chúng ta vẫn luôn được cả hai ấp ôm một thể</span>
+        <span class="poem-line">khi đi dạo trên con đường cỏ đất mòn</span>
+        <span class="poem-line">trăng cứ đi theo nhắc nhở hẳn còn ở đây</span>
+      </div>
+      
+      <div class="stanza">
+        <span class="poem-line">những buổi sáng ngày</span>
+        <span class="poem-line">mà đôi mắt cứ nhắm nghiền lại</span>
+        <span class="poem-line">là thế</span>
+        <span class="poem-line">ở trong nhau để trọn vẹn là thế</span>
+      </div>
+      
+      <div class="stanza">
+        <span class="poem-line">nước, đất, cát, sóng, núi, mây, lửa, gỗ</span>
+        <span class="poem-line">thật thân thiết</span>
+        <span class="poem-line">đã thấy ở mọi nơi, dường như trong mọi cuộc đời</span>
+      </div>
+      
+      <div class="stanza">
+        <span class="poem-line">rồi đây khi ánh lửa trên tay nghỉ tắt</span>
+        <span class="poem-line">chuyến đò đưa tôi sang bờ bên kia</span>
+        <span class="poem-line indent">sẽ thắp cho tôi một ánh đèn dầu.</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="poem-fin">
+    <span class="poem-fin-mark">◆</span>
+  </div>
+</div>
+
+
+<script>
+(function() {
+  'use strict';
+  
+  // ═══════════════════════════════════════
+  // NAVIGATION
+  // ═══════════════════════════════════════
+  
+  var transition = document.getElementById('transition');
+  
+  function triggerTransition(callback) {
+    transition.classList.add('active');
+    setTimeout(callback, 400);
+    setTimeout(function() {
+      transition.classList.remove('active');
+    }, 800);
+  }
+  
+  window.showList = function() {
+    triggerTransition(function() {
+      document.getElementById('homepage').classList.add('hidden');
+      var list = document.getElementById('poem-list-view');
+      list.style.display = 'flex';
+      requestAnimationFrame(function() {
+        list.classList.add('visible');
+      });
+    });
+  };
+  
+  window.backToHome = function() {
+    var list = document.getElementById('poem-list-view');
+    list.classList.remove('visible');
+    window.location.hash = '';
+    
+    triggerTransition(function() {
+      list.style.display = 'none';
+      document.getElementById('homepage').classList.remove('hidden');
+    });
+  };
+  
+  window.openPoem = function(id) {
+    var page = document.getElementById(id);
+    if (!page) return;
+    
+    triggerTransition(function() {
+      var list = document.getElementById('poem-list-view');
+      list.classList.remove('visible');
+      list.style.display = 'none';
+      
+      // Apply colors
+      var fg = page.getAttribute('data-fg');
+      var titleColor = page.getAttribute('data-title-color');
+      page.style.color = fg;
+      
+      var title = page.querySelector('.poem-hero-title');
+      if (title) title.style.color = titleColor;
+      
+      var date = page.querySelector('.poem-hero-date');
+      if (date) date.style.color = fg;
+      
+      var back = page.querySelector('.poem-back');
+      if (back) back.style.color = fg;
+      
+      page.classList.add('active');
+      window.location.hash = id;
+      window.scrollTo(0, 0);
+      
+      // Reset stanza visibility for animation
+      var stanzas = page.querySelectorAll('.stanza');
+      stanzas.forEach(function(s) { s.classList.remove('visible'); });
+      
+      // Reset fin visibility
+      var fin = page.querySelector('.poem-fin');
+      if (fin) fin.classList.remove('visible');
+      
+      // Trigger initial check
+      setTimeout(checkStanzaVisibility, 100);
+    });
+  };
+  
+  window.backToList = function() {
+    var pages = document.querySelectorAll('.poem-page');
+    
+    triggerTransition(function() {
+      pages.forEach(function(p) { p.classList.remove('active'); });
+      window.location.hash = '';
+      
+      var list = document.getElementById('poem-list-view');
+      list.style.display = 'flex';
+      requestAnimationFrame(function() {
+        list.classList.add('visible');
+      });
+      window.scrollTo(0, 0);
+    });
+  };
+  
+  // ═══════════════════════════════════════
+  // STANZA REVEAL ON SCROLL
+  // ═══════════════════════════════════════
+  
+  function checkStanzaVisibility() {
+    var activePage = document.querySelector('.poem-page.active');
+    if (!activePage) return;
+    
+    var stanzas = activePage.querySelectorAll('.stanza');
+    var windowHeight = window.innerHeight;
+    
+    stanzas.forEach(function(stanza) {
+      var rect = stanza.getBoundingClientRect();
+      // Reveal when stanza is 80% into viewport
+      if (rect.top < windowHeight * 0.85) {
+        stanza.classList.add('visible');
+      }
+    });
+    
+    // Check fin
+    var fin = activePage.querySelector('.poem-fin');
+    if (fin) {
+      var finRect = fin.getBoundingClientRect();
+      if (finRect.top < windowHeight * 0.9) {
+        fin.classList.add('visible');
+      }
+    }
+  }
+  
+  // ═══════════════════════════════════════
+  // PARALLAX
+  // ═══════════════════════════════════════
+  
+  var isMobile = window.innerWidth <= 768;
+  
+  function handleScroll() {
+    checkStanzaVisibility();
+    
+    if (isMobile) return;
+    
+    var activePage = document.querySelector('.poem-page.active');
+    if (!activePage) return;
+    
+    var img = activePage.querySelector('.poem-bg-img');
+    if (!img) return;
+    
+    var pageHeight = activePage.scrollHeight;
+    var viewHeight = window.innerHeight;
+    var scrollTop = window.scrollY;
+    var maxScroll = pageHeight - viewHeight;
+    
+    if (maxScroll <= 0) return;
+    
+    var percent = Math.max(0, Math.min(1, scrollTop / maxScroll));
+    img.style.objectPosition = 'center ' + (percent * 100) + '%';
+  }
+  
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  
+  window.addEventListener('resize', function() {
+    isMobile = window.innerWidth <= 768;
+  });
+  
+  // ═══════════════════════════════════════
+  // HASH NAVIGATION
+  // ═══════════════════════════════════════
+  
+  var hash = window.location.hash.replace('#', '');
+  if (hash && document.getElementById(hash)) {
+    document.getElementById('homepage').classList.add('hidden');
+    var page = document.getElementById(hash);
+    var fg = page.getAttribute('data-fg');
+    var titleColor = page.getAttribute('data-title-color');
+    page.style.color = fg;
+    
+    var title = page.querySelector('.poem-hero-title');
+    if (title) title.style.color = titleColor;
+    
+    var date = page.querySelector('.poem-hero-date');
+    if (date) date.style.color = fg;
+    
+    var back = page.querySelector('.poem-back');
+    if (back) back.style.color = fg;
+    
+    page.classList.add('active');
+    
+    setTimeout(checkStanzaVisibility, 500);
+  }
+  
+})();
+</script>
+
+</body>
+</html>
